@@ -85,7 +85,7 @@ def _run_scraper_loop():
                 ["python", "scraper.py", "--once"],
                 capture_output=True,
                 text=True,
-                timeout=600,  # 10 min max
+                timeout=300,  # 5 min max
             )
 
             if result.returncode == 0:
