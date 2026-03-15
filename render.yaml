@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: proxy-scraper-api
+    runtime: python
+    plan: free
+
+    buildCommand: pip install -r requirements.txt
+
+    # api.py lance Flask + le scraper en background thread
+    startCommand: gunicorn api:app --workers 1 --timeout 300 --bind 0.0.0.0:$PORT --worker-class gthread --threads 2
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 10000
+      - key: RENDER
+        value: "true"
+
+    healthCheckPath: /health
+    autoDeploy: true
+
+    # Disque persistant — garde les fichiers output/ entre les redémarrages
+    disk:
+      name: proxy-data
+      mountPath: /opt/render/project/src/output
+      sizeGB: 1       # 1 GB gratuit
