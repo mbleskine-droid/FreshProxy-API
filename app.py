@@ -112,9 +112,16 @@ def _run_scraper_loop():
         time.sleep(90)
 
 
-# Lance le thread au démarrage
-_thread = threading.Thread(target=_run_scraper_loop, daemon=True)
-_thread.start()
+# Le thread démarre au premier request (compatible gunicorn worker)
+_scraper_started = False
+
+
+@app.before_request
+def _start_scraper_once():
+    global _scraper_started
+    if not _scraper_started:
+        _scraper_started = True
+        threading.Thread(target=_run_scraper_loop, daemon=True).start()
 
 
 # ══════════════════════════════════════════════
