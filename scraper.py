@@ -59,8 +59,8 @@ except ImportError:
 IS_WINDOWS = sys.platform == "win32"
 
 # Config identique Windows/Linux (optimisée pour Render free tier)
-TCP_CONCURRENCY   = 200
-HTTP_CONCURRENCY  = 80
+TCP_CONCURRENCY   = 125
+HTTP_CONCURRENCY  = 60
 TCP_BATCH_SIZE    = 300
 HTTP_BATCH_SIZE   = 100
 FETCH_CONCURRENCY = 10
@@ -948,6 +948,10 @@ async def run_iteration(store: ProxyStore, dead: DeadList, iteration: int):
         return
 
     final = await step3_anonymity(tcp_alive, dead, store)
+
+    # ── Vider le store : on ne garde QUE les proxies fraîchement vérifiés ──
+    store.verified = {}
+    store._dirty   = True
 
     # ── Vider le store : on ne garde QUE les proxies fraîchement vérifiés ──
     store.verified = {}
