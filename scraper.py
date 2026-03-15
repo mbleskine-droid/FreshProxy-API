@@ -949,6 +949,10 @@ async def run_iteration(store: ProxyStore, dead: DeadList, iteration: int):
 
     final = await step3_anonymity(tcp_alive, dead, store)
 
+    # ── Vider le store : on ne garde QUE les proxies fraîchement vérifiés ──
+    store.verified = {}
+    store._dirty   = True
+
     for p in final:
         store.add(p)
         dead.remove(p.addr)
